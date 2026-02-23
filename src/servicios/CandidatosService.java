@@ -1,7 +1,6 @@
 package servicios;
 
 import java.util.List;
-
 import modelos.Candidato;
 
 public class CandidatosService {
@@ -12,6 +11,14 @@ public class CandidatosService {
     }
 
     public void agregarCandidato(Candidato candidato) {
+
+        for (Candidato c : candidatos) {
+            if (c.getNombre().equalsIgnoreCase(candidato.getNombre()) &&
+                c.getApellido().equalsIgnoreCase(candidato.getApellido())) {
+                throw new IllegalArgumentException("El candidato ya está registrado.");
+            }
+        }
+
         candidatos.add(candidato);
     }
 

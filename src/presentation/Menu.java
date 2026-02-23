@@ -1,8 +1,10 @@
 package presentation;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
-
 import modelos.Candidato;
 import servicios.CandidatosService;
 
@@ -18,7 +20,7 @@ public class Menu {
 
     public void iniciar() {
 
-        int opcion;
+        int opcion = 0;
 
         do {
             System.out.println("\n--- SISTEMA DE ADMISIONES ---");
@@ -27,8 +29,12 @@ public class Menu {
             System.out.println("3. Salir");
             System.out.print("Seleccione una opcion: ");
 
-            opcion = sc.nextInt();
-            sc.nextLine();
+            try {
+                opcion = Integer.parseInt(sc.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Debe ingresar un número válido.");
+                continue;
+            }
 
             switch (opcion) {
                 case 1:
@@ -49,38 +55,51 @@ public class Menu {
 
     private void agregarCandidato() {
 
-        System.out.print("Nombre: ");
-        String nombre = sc.nextLine();
+        try {
 
-        System.out.print("Apellido: ");
-        String apellido = sc.nextLine();
+            System.out.print("Nombre: ");
+            String nombre = sc.nextLine();
 
-        System.out.print("Etnia: ");
-        String etnia = sc.nextLine();
+            System.out.print("Apellido: ");
+            String apellido = sc.nextLine();
 
-        System.out.print("ICFES Global: ");
-        double icfes = sc.nextDouble();
+            System.out.print("Etnia: ");
+            String etnia = sc.nextLine();
 
-        System.out.print("Matematicas: ");
-        double matematicas = sc.nextDouble();
+            System.out.print("ICFES Global: ");
+            double icfes = sc.nextDouble();
 
-        System.out.print("Ingles: ");
-        double ingles = sc.nextDouble();
-        sc.nextLine();
+            System.out.print("Matematicas: ");
+            double matematicas = sc.nextDouble();
 
-        Candidato candidato = new Candidato(
-                nombre, apellido, etnia,
-                icfes, matematicas, ingles);
+            System.out.print("Ingles: ");
+            double ingles = sc.nextDouble();
+            sc.nextLine();
 
-        cService.agregarCandidato(candidato);
+            System.out.print("Fecha inscripción (YYYY-MM-DD): ");
+                LocalDate fecha = LocalDate.parse(sc.nextLine());
 
-        System.out.println("Candidato agregado correctamente.");
+            Candidato candidato = new Candidato(
+                    nombre, apellido, etnia,
+                    icfes, matematicas, ingles, fecha);
+
+            cService.agregarCandidato(candidato);
+
+            System.out.println("Candidato agregado correctamente.");
+
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error: " + e.getMessage());
+        } catch (InputMismatchException e) {
+            System.out.println("Debe ingresar números válidos.");
+            sc.nextLine();
+        } catch (DateTimeParseException e) {
+            System.out.println("Formato de fecha inválido.");
+        }
     }
 
     private void mostrarCandidatos() {
 
         cService.ordenarCandidatos();
-
         List<Candidato> lista = cService.getCandidatos();
 
         System.out.println("\n--- LISTA DE ADMITIDOS ---");
